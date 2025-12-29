@@ -1,0 +1,62 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Postagens - Mesa Secreta{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">📰 Todas as Postagens</h1>
+        
+        <!-- Filtro de Categorias -->
+        <div class="filters">
+            <a href="{% url 'core:postagem_list' %}" class="filter-btn {% if not categoria_selecionada %}active{% endif %}">Todas</a>
+            <a href="?categoria=novidades" class="filter-btn {% if categoria_selecionada == 'novidades' %}active{% endif %}">Novidades</a>
+            <a href="?categoria=dicas" class="filter-btn {% if categoria_selecionada == 'dicas' %}active{% endif %}">Dicas</a>
+            <a href="?categoria=reviews" class="filter-btn {% if categoria_selecionada == 'reviews' %}active{% endif %}">Reviews</a>
+        </div>
+
+        <!-- Grid de Postagens -->
+        <div class="grid">
+            {% for postagem in postagens %}
+            <div class="card">
+                {% if postagem.imagem_capa %}
+                <div class="card-image" style="background-image: url('{{ postagem.imagem_capa.url }}');"></div>
+                {% else %}
+                <div class="card-image card-image-placeholder"></div>
+                {% endif %}
+                <div class="card-content">
+                    <span class="badge">{{ postagem.get_categoria_display }}</span>
+                    <h3 class="card-title">{{ postagem.titulo }}</h3>
+                    <p class="card-subtitle">{{ postagem.subtitulo|truncatewords:20 }}</p>
+                    <div class="card-footer">
+                        <span class="card-date">{{ postagem.data_publicacao|date:"d/m/Y" }}</span>
+                        <a href="{% url 'core:postagem_detail' postagem.pk %}" class="btn btn-small">Ler Mais</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Nenhuma postagem encontrada.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Paginação -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}" class="pagination-btn">Primeira</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}" class="pagination-btn">Anterior</a>
+            {% endif %}
+            
+            <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}" class="pagination-btn">Próxima</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if categoria_selecionada %}&categoria={{ categoria_selecionada }}{% endif %}" class="pagination-btn">Última</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

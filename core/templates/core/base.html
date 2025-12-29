@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mesa Secreta - Quartel General dos Gamers{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/footer.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1 class="logo">🎲 MESA SECRETA</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{% url 'core:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Início</a></li>
+                <li><a href="{% url 'core:postagem_list' %}" class="nav-link {% if 'postagem' in request.resolver_match.url_name %}active{% endif %}">Postagens</a></li>
+                <li><a href="{% url 'core:video_list' %}" class="nav-link {% if 'video' in request.resolver_match.url_name %}active{% endif %}">Vídeos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <!-- Call to Action -->
+            <div class="footer-cta">
+                <div class="cta-content">
+                    <h2 class="cta-title">Junte-se à Nossa Comunidade! 🎲</h2>
+                    <p class="cta-description">Fique por dentro de novidades, reviews e dicas sobre jogos de tabuleiro e RPG</p>
+                    <div class="cta-buttons">
+                        <a href="https://youtube.com/@mesasecreta" target="_blank" rel="noopener noreferrer" class="cta-button cta-youtube">
+                            <i class="fa-brands fa-youtube"></i> Inscrever no Canal
+                        </a>
+                        <a href="https://apoia.se/mesasecreta" target="_blank" rel="noopener noreferrer" class="cta-button cta-apoiar">
+                            <i class="fa-solid fa-heart"></i> Apoiar Projeto
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-content">
+                <!-- Sobre -->
+                <div class="footer-section footer-about">
+                    <h3 class="footer-title">🎲 Mesa Secreta</h3>
+                    <p class="footer-description">
+                        O Quartel General dos jogos de tabuleiro e RPG! Conteúdo de qualidade sobre reviews, 
+                        tutoriais, notícias e tudo que envolve o universo dos jogos analógicos.
+                    </p>
+                    <div class="footer-stats">
+                        <div class="stat-item">
+                            <i class="fa-solid fa-video"></i>
+                            <span>Vídeos semanais</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fa-solid fa-newspaper"></i>
+                            <span>Reviews completos</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Dicas exclusivas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegação Rápida -->
+                <div class="footer-section">
+                    <h4 class="footer-heading">Explorar</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'core:home' %}"><i class="fa-solid fa-house"></i> Página Inicial</a></li>
+                        <li><a href="{% url 'core:postagem_list' %}"><i class="fa-solid fa-newspaper"></i> Todas as Postagens</a></li>
+                        <li><a href="{% url 'core:video_list' %}"><i class="fa-solid fa-play"></i> Galeria de Vídeos</a></li>
+                        <li><a href="{% url 'core:postagem_list' %}?categoria=novidades"><i class="fa-solid fa-star"></i> Novidades</a></li>
+                        <li><a href="{% url 'core:postagem_list' %}?categoria=dicas"><i class="fa-solid fa-lightbulb"></i> Dicas & Tutoriais</a></li>
+                        <li><a href="{% url 'core:postagem_list' %}?categoria=reviews"><i class="fa-solid fa-award"></i> Reviews de Jogos</a></li>
+                    </ul>
+                </div>
+
+                <!-- Redes Sociais -->
+                <div class="footer-section">
+                    <h4 class="footer-heading">Conecte-se</h4>
+                    <p class="footer-social-text">Siga nas redes sociais e não perca nenhum conteúdo!</p>
+                    <div class="footer-social">
+                        <a href="https://youtube.com/@mesasecreta" target="_blank" rel="noopener noreferrer" class="footer-social-link footer-youtube" title="YouTube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a href="https://instagram.com/mesasecreta" target="_blank" rel="noopener noreferrer" class="footer-social-link footer-instagram" title="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="https://tiktok.com/@mesasecreta" target="_blank" rel="noopener noreferrer" class="footer-social-link footer-tiktok" title="TikTok">
+                            <i class="fa-brands fa-tiktok"></i>
+                        </a>
+                    </div>
+                    <div class="footer-newsletter">
+                        <p class="newsletter-text">📧 Em breve: Newsletter exclusiva!</p>
+                    </div>
+                </div>
+
+                <!-- Apoie o Projeto -->
+                <div class="footer-section">
+                    <h4 class="footer-heading">Apoie o Canal</h4>
+                    <p class="footer-support-text">Ajude a manter o conteúdo gratuito e de qualidade!</p>
+                    <a href="https://apoia.se/mesasecreta" target="_blank" rel="noopener noreferrer" class="footer-support-btn">
+                        <i class="fa-solid fa-heart"></i>
+                        <div class="support-info">
+                            <strong>Apoiar no Apoia.se</strong>
+                            <span>Seja um apoiador</span>
+                        </div>
+                    </a>
+                    <a href="https://amzn.to/44P30Wf" target="_blank" rel="noopener noreferrer" class="footer-amazon-link">
+                        <i class="fa-brands fa-amazon"></i>
+                        <div class="amazon-info">
+                            <strong>Loja de Jogos</strong>
+                            <span>Compre pela Amazon</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="copyright">
+                        &copy; 2025 <strong>Mesa Secreta</strong>. Todos os direitos reservados. 
+                        <span class="made-with">Feito com <i class="fa-solid fa-heart"></i> para a comunidade gamer</span>
+                    </p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Política de Privacidade</a>
+                        <span class="separator">•</span>
+                        <a href="#">Termos de Uso</a>
+                        <span class="separator">•</span>
+                        <a href="#">Contato</a>
+                    </div>
+                </div>
+                <button id="scrollToTop" class="scroll-top-btn" title="Voltar ao topo">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Botão Voltar ao Topo - com verificação de segurança
+        const scrollTopBtn = document.getElementById('scrollToTop');
+        
+        if (scrollTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+            
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Animação de Contadores (Hero Stats)
+        function animateCounter(element) {
+            const target = parseInt(element.dataset.target);
+            const duration = 2000; // 2 segundos
+            const increment = target / (duration / 16); // 60 FPS
+            let current = 0;
+
+            const updateCounter = () => {
+                current += increment;
+                if (current < target) {
+                    element.textContent = Math.floor(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target + '+';
+                }
+            };
+
+            updateCounter();
+        }
+
+        // Observer para iniciar animação quando os stats aparecerem na tela
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        if (!stat.classList.contains('animated')) {
+                            stat.classList.add('animated');
+                            animateCounter(stat);
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observar a seção de stats quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            const heroStats = document.querySelector('.hero-stats');
+            if (heroStats) {
+                statsObserver.observe(heroStats);
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

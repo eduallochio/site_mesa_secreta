@@ -1,0 +1,170 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section Premium -->
+<section class="hero">
+    <!-- Partículas de Fundo (Dados Flutuantes) -->
+    <div class="hero-particles">
+        <div class="particle dice">🎲</div>
+        <div class="particle dice">🎯</div>
+        <div class="particle dice">⚔️</div>
+        <div class="particle dice">🗡️</div>
+        <div class="particle dice">🛡️</div>
+        <div class="particle dice">🎲</div>
+        <div class="particle dice">🃏</div>
+        <div class="particle dice">♟️</div>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="hero-overlay"></div>
+    
+    <div class="container">
+        <div class="hero-content">
+            <!-- Badge Ao Vivo -->
+            <div class="hero-badge">
+                <span class="live-indicator"></span>
+                <span>Conteúdo Atualizado Semanalmente</span>
+            </div>
+            
+            <!-- Título Principal -->
+            <h1 class="hero-title">
+                <span class="title-line">Bem-vindo ao</span>
+                <span class="title-main">Mesa Secreta</span>
+                <span class="title-subtitle">Seu Quartel General de Board Games</span>
+            </h1>
+            
+            <!-- Descrição -->
+            <p class="hero-description">
+                Reviews completos, análises profundas e as melhores estratégias 
+                para dominar o mundo dos jogos de tabuleiro modernos e RPGs
+            </p>
+            
+            <!-- Estatísticas -->
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="150">0</div>
+                    <div class="stat-label">Jogos Analisados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-label">Vídeos por Mês</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="2000">0</div>
+                    <div class="stat-label">Inscritos no Canal</div>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="hero-cta">
+                <a href="{% url 'core:postagem_list' %}" class="hero-btn hero-btn-primary">
+                    <i class="fas fa-book-open"></i>
+                    <span>Explorar Artigos</span>
+                </a>
+                <a href="{% url 'core:video_list' %}" class="hero-btn hero-btn-secondary">
+                    <i class="fab fa-youtube"></i>
+                    <span>Assistir Vídeos</span>
+                </a>
+                <a href="https://youtube.com/@mesasecreta" target="_blank" class="hero-btn hero-btn-outline">
+                    <i class="fas fa-bell"></i>
+                    <span>Inscrever-se</span>
+                </a>
+            </div>
+            
+            <!-- Redes Sociais -->
+            <div class="hero-social">
+                <span class="social-label">Siga-nos:</span>
+                <a href="https://youtube.com/@mesasecreta" target="_blank" class="social-link youtube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://instagram.com/mesasecreta" target="_blank" class="social-link instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://tiktok.com/@mesasecreta" target="_blank" class="social-link tiktok">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="hero-scroll">
+        <div class="scroll-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <p>Role para descobrir</p>
+    </div>
+</section>
+
+<!-- Postagens em Destaque -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">📰 Postagens em Destaque</h2>
+        <div class="grid">
+            {% for postagem in postagens_destaque %}
+            <div class="card">
+                {% if postagem.imagem_capa %}
+                <div class="card-image" style="background-image: url('{{ postagem.imagem_capa.url }}');"></div>
+                {% else %}
+                <div class="card-image card-image-placeholder"></div>
+                {% endif %}
+                <div class="card-content">
+                    <span class="badge">{{ postagem.get_categoria_display }}</span>
+                    <h3 class="card-title">{{ postagem.titulo }}</h3>
+                    <p class="card-subtitle">{{ postagem.subtitulo|truncatewords:20 }}</p>
+                    <div class="card-footer">
+                        <span class="card-date">{{ postagem.data_publicacao|date:"d/m/Y" }}</span>
+                        <a href="{% url 'core:postagem_detail' postagem.pk %}" class="btn btn-small">Ler Mais</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Nenhuma postagem disponível no momento.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if postagens_destaque %}
+        <div class="section-cta">
+            <a href="{% url 'core:postagem_list' %}" class="btn btn-secondary">Ver Todas as Postagens</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Vídeos Recentes -->
+<section class="section section-dark">
+    <div class="container">
+        <h2 class="section-title">🎬 Vídeos Recentes</h2>
+        <div class="grid">
+            {% for video in videos_recentes %}
+            <div class="card video-card">
+                <div class="video-thumbnail">
+                    <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/maxresdefault.jpg" alt="{{ video.titulo }}">
+                    <div class="play-icon">▶</div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">{{ video.titulo }}</h3>
+                    <p class="card-date">{{ video.data_publicacao|date:"d/m/Y" }}</p>
+                    <a href="{{ video.get_youtube_url }}" target="_blank" class="btn btn-small">Assistir no YouTube</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Nenhum vídeo disponível no momento.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if videos_recentes %}
+        <div class="section-cta">
+            <a href="{% url 'core:video_list' %}" class="btn btn-secondary">Ver Todos os Vídeos</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

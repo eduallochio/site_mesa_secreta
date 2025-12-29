@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ postagem.titulo }} - Mesa Secreta{% endblock %}
+
+{% block content %}
+<article class="article-detail">
+    <div class="container-narrow">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{% url 'core:home' %}">Início</a> / 
+            <a href="{% url 'core:postagem_list' %}">Postagens</a> / 
+            <span>{{ postagem.titulo|truncatewords:5 }}</span>
+        </div>
+
+        <!-- Header do Artigo -->
+        <header class="article-header">
+            <span class="badge badge-large">{{ postagem.get_categoria_display }}</span>
+            <h1 class="article-title">{{ postagem.titulo }}</h1>
+            {% if postagem.subtitulo %}
+            <p class="article-subtitle">{{ postagem.subtitulo }}</p>
+            {% endif %}
+            <div class="article-meta">
+                <span class="meta-date">📅 {{ postagem.data_publicacao|date:"d/m/Y H:i" }}</span>
+            </div>
+        </header>
+
+        <!-- Imagem de Capa -->
+        {% if postagem.imagem_capa %}
+        <div class="article-image">
+            <img src="{{ postagem.imagem_capa.url }}" alt="{{ postagem.titulo }}">
+        </div>
+        {% endif %}
+
+        <!-- Conteúdo -->
+        <div class="article-content">
+            {{ postagem.conteudo|safe }}
+        </div>
+
+        <!-- Navegação -->
+        <div class="article-nav">
+            <a href="{% url 'core:postagem_list' %}" class="btn btn-secondary">← Voltar para Postagens</a>
+        </div>
+    </div>
+</article>
+{% endblock %}

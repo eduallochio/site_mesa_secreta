@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Vídeos - Mesa Secreta{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">🎬 Todos os Vídeos</h1>
+        
+        <!-- Grid de Vídeos -->
+        <div class="grid">
+            {% for video in videos %}
+            <div class="card video-card">
+                <div class="video-thumbnail">
+                    <img src="https://img.youtube.com/vi/{{ video.youtube_id }}/maxresdefault.jpg" alt="{{ video.titulo }}">
+                    <div class="play-icon">▶</div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">{{ video.titulo }}</h3>
+                    {% if video.descricao %}
+                    <p class="card-subtitle">{{ video.descricao|truncatewords:15 }}</p>
+                    {% endif %}
+                    <div class="card-footer">
+                        <span class="card-date">{{ video.data_publicacao|date:"d/m/Y" }}</span>
+                        <a href="{{ video.get_youtube_url }}" target="_blank" class="btn btn-small">Assistir</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Nenhum vídeo disponível no momento.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Paginação -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-btn">Primeira</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">Anterior</a>
+            {% endif %}
+            
+            <span class="pagination-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">Próxima</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn">Última</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
