@@ -85,16 +85,30 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# Configuração para Supabase PostgreSQL (obrigatório)
-DATABASE_URL = config('DATABASE_URL')
+# Permitir SQLite local para desenvolvimento, PostgreSQL obrigatório em produção
+USE_LOCAL_DB = config('USE_LOCAL_DB', default='False', cast=bool)
+DATABASE_URL = config('DATABASE_URL', default='')
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+if USE_LOCAL_DB and DEBUG:
+    # SQLite para desenvolvimento local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("⚠️  USANDO SQLITE LOCAL PARA DESENVOLVIMENTO")
+elif DATABASE_URL:
+    # PostgreSQL (Supabase) para produção
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    raise Exception("DATABASE_URL não configurado! Configure no .env ou use USE_LOCAL_DB=True para desenvolvimento local.")
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
