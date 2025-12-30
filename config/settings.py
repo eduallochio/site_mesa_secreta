@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-vo3fh^w&!txlj=y+xf#d19xgu6+5n^k@_16la8l6uf)d6*atf#')
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-vo3fh^w&!txlj=y+xf#d19xgu6+5n^k@_16la8l6uf)d6*atf#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = config('DEBUG', default='True', cast=bool)
 
 ALLOWED_HOSTS = ['*']
 
@@ -84,11 +85,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# Configuração para Vercel (PostgreSQL) ou local (SQLite)
-DATABASE_URL = os.environ.get('DATABASE_URL')
+# Configuração para Supabase (PostgreSQL) ou local (SQLite)
+DATABASE_URL = config('DATABASE_URL', default=None)
 
 if DATABASE_URL:
-    # Produção no Vercel - Usar PostgreSQL
+    # Produção (Supabase/Vercel) - Usar PostgreSQL
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -104,7 +105,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
