@@ -1,6 +1,98 @@
 from django.db import models
 from django.utils import timezone
 from ckeditor.fields import RichTextField
+import requests
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class ConfiguracaoSite(models.Model):
+    """Model singleton para configurações editáveis do site"""
+    
+    # Estatísticas da Home
+    jogos_analisados = models.IntegerField('Jogos Analisados', default=150, help_text='Número exibido na home')
+    videos_por_mes = models.IntegerField('Vídeos por Mês', default=15, help_text='Número exibido na home')
+    inscritos_canal = models.IntegerField('Inscritos no Canal (Manual)', default=2000, help_text='Número manual ou obtido da API')
+    usar_inscritos_automatico = models.BooleanField('Usar Inscritos Automático do YouTube', default=False, help_text='Buscar automaticamente da API do YouTube')
+    
+    # YouTube API
+    youtube_api_key = models.CharField('YouTube API Key', max_length=100, blank=True, help_text='Chave de API do Google Cloud Console')
+    youtube_channel_id = models.CharField('YouTube Channel ID', max_length=100, blank=True, help_text='ID do canal do YouTube')
+    
+    # Textos da Home
+    hero_titulo = models.CharField('Título Principal', max_length=200, default='Bem-vindo à Mesa Secreta')
+    hero_descricao = models.TextField('Descrição Principal', default='Reviews completos, análises profundas e as melhores estratégias para dominar o mundo dos jogos de tabuleiro modernos e RPGs')
+    
+    # Redes Sociais
+    youtube_url = models.URLField('URL do YouTube', blank=True, default='https://youtube.com/@mesasecreta')
+    instagram_url = models.URLField('URL do Instagram', blank=True, default='https://instagram.com/mesasecreta')
+    tiktok_url = models.URLField('URL do TikTok', blank=True, default='https://tiktok.com/@mesasecreta')
+    twitter_url = models.URLField('URL do Twitter/X', blank=True)
+    facebook_url = models.URLField('URL do Facebook', blank=True)
+    
+    # Informações do Footer
+    sobre_texto = models.TextField('Texto Sobre', default='O Quartel General dos jogos de tabuleiro e RPG! Conteúdo de qualidade sobre reviews, notícias e dicas para todos os níveis de jogadores.')
+    email_contato = models.EmailField('Email de Contato', blank=True)
+    
+    # SEO
+    meta_description = models.CharField('Meta Description', max_length=160, blank=True)
+    meta_keywords = models.CharField('Meta Keywords', max_length=255, blank=True)
+    
+    class Meta:
+        verbose_name = 'Configuração do Site'
+        verbose_name_plural = 'Configurações do Site'
+    
+    def __str__(self):
+        return 'Configurações do Site'
+    
+    def get_inscritos_youtube(self):
+        """Busca o número de inscritos diretamente da API do YouTube"""
+        if not self.youtube_api_key or not self.youtube_channel_id:
+            return None
+        
+        try:
+            url = f'https://www.googleapis.com/youtube/v3/channels'
+            params = {
+                'part': 'statistics',
+                'id': self.youtube_channel_id,
+                'key': self.youtube_api_key
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            
+            data = response.json()
+            if 'items' in data and len(data['items']) > 0:
+                subscriber_count = int(data['items'][0]['statistics']['subscriberCount'])
+                return subscriber_count
+            
+        except requests.RequestException as e:
+            logger.error(f'Erro ao buscar inscritos do YouTube: {e}')
+        except (KeyError, ValueError, IndexError) as e:
+            logger.error(f'Erro ao processar resposta da API do YouTube: {e}')
+        
+        return None
+    
+    def get_inscritos_display(self):
+        """Retorna o número de inscritos a ser exibido (automático ou manual)"""
+        if self.usar_inscritos_automatico:
+            inscritos_auto = self.get_inscritos_youtube()
+            if inscritos_auto is not None:
+                return inscritos_auto
+        
+        return self.inscritos_canal
+    
+    def save(self, *args, **kwargs):
+        # Garantir que existe apenas uma instância
+        self.pk = 1
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def get_config(cls):
+        """Retorna a instância única de configuração"""
+        config, created = cls.objects.get_or_create(pk=1)
+        return config
 
 
 class Postagem(models.Model):

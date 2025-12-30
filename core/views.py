@@ -3,17 +3,19 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Postagem, Video
+from .models import Postagem, Video, ConfiguracaoSite
 
 
 def home(request):
     """View da página inicial"""
     postagens_destaque = Postagem.objects.filter(status='publicado').order_by('-data_publicacao')[:6]
     videos_recentes = Video.objects.order_by('-data_publicacao')[:3]
+    config = ConfiguracaoSite.get_config()
     
     context = {
         'postagens_destaque': postagens_destaque,
         'videos_recentes': videos_recentes,
+        'config': config,
     }
     return render(request, 'core/home.html', context)
 

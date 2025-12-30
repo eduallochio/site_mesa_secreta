@@ -36,22 +36,21 @@
             
             <!-- Descrição -->
             <p class="hero-description">
-                Reviews completos, análises profundas e as melhores estratégias 
-                para dominar o mundo dos jogos de tabuleiro modernos e RPGs
+                {{ config.hero_descricao }}
             </p>
             
             <!-- Estatísticas -->
             <div class="hero-stats">
                 <div class="stat-item">
-                    <div class="stat-number" data-target="150">0</div>
+                    <div class="stat-number" data-target="{{ config.jogos_analisados }}">0</div>
                     <div class="stat-label">Jogos Analisados</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-number" data-target="{{ config.videos_por_mes }}">0</div>
                     <div class="stat-label">Vídeos por Mês</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" data-target="2000">0</div>
+                    <div class="stat-number" data-target="{{ config.get_inscritos_display }}">0</div>
                     <div class="stat-label">Inscritos no Canal</div>
                 </div>
             </div>

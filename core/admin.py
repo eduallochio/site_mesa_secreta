@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Sum
 import csv
-from .models import Postagem, Video
+from .models import Postagem, Video, ConfiguracaoSite
 
 
 class ExportCsvMixin:
@@ -570,6 +570,82 @@ admin_site = MesaSecretaAdminSite(name='admin')
 # Registrar os models no site customizado
 admin_site.register(Postagem, PostagemAdmin)
 admin_site.register(Video, VideoAdmin)
+
+
+@admin.register(ConfiguracaoSite)
+class ConfiguracaoSiteAdmin(admin.ModelAdmin):
+    """Admin para configurações editáveis do site"""
+    
+    fieldsets = (
+        ('📊 Estatísticas da Home', {
+            'fields': ('jogos_analisados', 'videos_por_mes', 'inscritos_canal_info', 'inscritos_canal', 'usar_inscritos_automatico'),
+            'description': 'Números exibidos nas estatísticas da página inicial'
+        }),
+        ('📺 Integração YouTube', {
+            'fields': ('youtube_api_key', 'youtube_channel_id'),
+            'description': 'Configure para buscar inscritos automaticamente. <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Obter API Key</a>',
+            'classes': ('collapse',)
+        }),
+        ('✍️ Textos da Home', {
+            'fields': ('hero_titulo', 'hero_descricao'),
+            'description': 'Textos principais da página inicial'
+        }),
+        ('🌐 Redes Sociais', {
+            'fields': ('youtube_url', 'instagram_url', 'tiktok_url', 'twitter_url', 'facebook_url'),
+            'description': 'URLs das redes sociais (deixe em branco para ocultar)'
+        }),
+        ('ℹ️ Informações do Site', {
+            'fields': ('sobre_texto', 'email_contato'),
+            'description': 'Informações exibidas no footer'
+        }),
+        ('🔍 SEO', {
+            'fields': ('meta_description', 'meta_keywords'),
+            'description': 'Otimização para mecanismos de busca',
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('inscritos_canal_info',)
+    
+    def inscritos_canal_info(self, obj):
+        """Exibe informações sobre os inscritos do YouTube"""
+        if obj.usar_inscritos_automatico and obj.youtube_api_key and obj.youtube_channel_id:
+            inscritos = obj.get_inscritos_youtube()
+            if inscritos is not None:
+                return mark_safe(f'<div style="padding: 10px; background: rgba(76, 175, 80, 0.15); border-left: 4px solid #4CAF50; border-radius: 4px;">'
+                                f'<strong>✅ Inscritos automáticos:</strong> {inscritos:,} inscritos<br>'
+                                f'<small>Atualizado em tempo real da API do YouTube</small></div>')
+            else:
+                return mark_safe(f'<div style="padding: 10px; background: rgba(244, 67, 54, 0.15); border-left: 4px solid #f44336; border-radius: 4px;">'
+                                f'<strong>❌ Erro ao buscar inscritos</strong><br>'
+                                f'<small>Verifique a API Key e o Channel ID. Usando valor manual: {obj.inscritos_canal:,}</small></div>')
+        elif obj.usar_inscritos_automatico:
+            return mark_safe(f'<div style="padding: 10px; background: rgba(255, 152, 0, 0.15); border-left: 4px solid #FF9800; border-radius: 4px;">'
+                            f'<strong>⚠️ Configuração incompleta</strong><br>'
+                            f'<small>Configure a API Key e Channel ID abaixo para usar inscritos automáticos</small></div>')
+        else:
+            return mark_safe(f'<div style="padding: 10px; background: rgba(0, 229, 204, 0.15); border-left: 4px solid #00E5CC; border-radius: 4px;">'
+                            f'<strong>📝 Modo manual ativo</strong><br>'
+                            f'<small>Valor atual: {obj.inscritos_canal:,} inscritos</small></div>')
+    
+    inscritos_canal_info.short_description = 'Status dos Inscritos'
+    
+    def has_add_permission(self, request):
+        # Permitir apenas uma instância
+        return not ConfiguracaoSite.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        # Não permitir deletar a configuração
+        return False
+    
+    def changelist_view(self, request, extra_context=None):
+        # Redirecionar para edição da única instância
+        config = ConfiguracaoSite.get_config()
+        return self.changeform_view(request, str(config.pk), '', extra_context)
+
+
+# Registrar no admin_site customizado também
+admin_site.register(ConfiguracaoSite, ConfiguracaoSiteAdmin)
 
 # Personalização completa do Admin
 admin.site.site_header = 'Mesa Secreta'

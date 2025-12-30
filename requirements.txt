@@ -7,3 +7,4 @@ feedparser==6.0.12
 psycopg2-binary==2.9.10
 dj-database-url==2.2.0
 whitenoise==6.8.2
+requests==2.32.5

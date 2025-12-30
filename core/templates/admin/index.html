@@ -353,6 +353,10 @@
                 <span>⚡</span> Ações Rápidas
             </div>
             <div class="action-buttons">
+                <a href="{% url 'admin:core_configuracaosite_change' 1 %}" class="action-btn" style="background: linear-gradient(135deg, #00E5CC, #00b3a0); grid-column: span 2;">
+                    <span class="icon">⚙️</span>
+                    <span>Configurações do Site</span>
+                </a>
                 <a href="{% url 'admin:core_postagem_add' %}" class="action-btn">
                     <span class="icon">➕</span>
                     <span>Nova Postagem</span>
@@ -378,6 +382,7 @@
                     <span>Ver Rascunhos</span>
                 </a>
             </div>
+        </div>
         </div>
         
         <!-- Distribuição por Categoria -->
