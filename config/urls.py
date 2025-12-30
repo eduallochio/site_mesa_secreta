@@ -18,6 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from core import views as core_views
+
+# Customizar o site admin para usar nossa tela de login
+admin.site.login = core_views.login_view
+admin.site.logout = core_views.logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
