@@ -10,10 +10,11 @@ As variáveis de ambiente não estão configuradas no Vercel, fazendo o Django c
 
 ## ✅ SOLUÇÃO PASSO A PASSO
 
-### 1️⃣ PRIMEIRO: Execute os Dados Iniciais no Supabase
+### 1️⃣ PRIMEIRO: Execute os Scripts no Supabase
 
-Se ainda não fez isso, execute agora:
+Se ainda não fez isso, execute na ordem:
 
+#### A) Dados Iniciais
 1. Acesse: https://supabase.com/dashboard/project/szlilldcemfhimfikqig/sql/new
 2. Copie todo conteúdo de: `banco/002_dados_iniciais.sql`
 3. Cole no SQL Editor e clique em **RUN**
@@ -23,6 +24,17 @@ Se ainda não fez isso, execute agora:
 ✅ Usuário admin criado/atualizado!
 ✅ Configuração do site criada/atualizada!
 ✅ BANCO DE DADOS CONFIGURADO COM SUCESSO!
+```
+
+#### B) Segurança (RLS)
+1. No SQL Editor, clique em **New Query**
+2. Copie todo conteúdo de: `banco/003_seguranca_rls.sql`
+3. Cole no SQL Editor e clique em **RUN**
+
+**Aguarde ver:**
+```
+✅ RLS habilitado em todas as tabelas
+🔒 SEGURANÇA MÁXIMA CONFIGURADA!
 ```
 
 ---
