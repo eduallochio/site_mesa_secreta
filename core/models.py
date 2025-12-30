@@ -34,6 +34,12 @@ class ConfiguracaoSite(models.Model):
     # Informações do Footer
     sobre_texto = models.TextField('Texto Sobre', default='O Quartel General dos jogos de tabuleiro e RPG! Conteúdo de qualidade sobre reviews, notícias e dicas para todos os níveis de jogadores.')
     email_contato = models.EmailField('Email de Contato', blank=True)
+    desenvolvedor_nome = models.CharField('Nome do Desenvolvedor', max_length=100, default='OmegaSistem', blank=True)
+    desenvolvedor_url = models.URLField('URL do Desenvolvedor', default='https://omegasistem.com.br', blank=True)
+    
+    # Políticas e Termos
+    politica_privacidade = models.TextField('Política de Privacidade', blank=True, help_text='Conteúdo da política de privacidade (aceita HTML)')
+    termos_uso = models.TextField('Termos de Uso', blank=True, help_text='Conteúdo dos termos de uso (aceita HTML)')
     
     # SEO
     meta_description = models.CharField('Meta Description', max_length=160, blank=True)

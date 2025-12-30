@@ -595,10 +595,15 @@ class ConfiguracaoSiteAdmin(admin.ModelAdmin):
             'description': 'URLs das redes sociais (deixe em branco para ocultar)'
         }),
         ('ℹ️ Informações do Site', {
-            'fields': ('sobre_texto', 'email_contato'),
+            'fields': ('sobre_texto', 'email_contato', 'desenvolvedor_nome'),
             'description': 'Informações exibidas no footer'
         }),
-        ('🔍 SEO', {
+        ('� Políticas e Termos', {
+            'fields': ('politica_privacidade', 'termos_uso'),
+            'description': 'Conteúdo das políticas exibidas nos popups. Aceita HTML básico.',
+            'classes': ('collapse',)
+        }),
+        ('�🔍 SEO', {
             'fields': ('meta_description', 'meta_keywords'),
             'description': 'Otimização para mecanismos de busca',
             'classes': ('collapse',)

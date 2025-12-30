@@ -127,6 +127,16 @@
                         </div>
                     </a>
                 </div>
+                
+                <!-- Links Úteis -->
+                <div class="footer-section">
+                    <h4 class="footer-heading">Links Úteis</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="openModal('privacidadeModal'); return false;"><i class="fa-solid fa-shield-halved"></i> Política de Privacidade</a></li>
+                        <li><a href="#" onclick="openModal('termosModal'); return false;"><i class="fa-solid fa-file-contract"></i> Termos de Uso</a></li>
+                        <li><a href="#"><i class="fa-solid fa-envelope"></i> Contato</a></li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Copyright -->
@@ -137,11 +147,11 @@
                         <span class="made-with">Feito com <i class="fa-solid fa-heart"></i> para a comunidade gamer</span>
                     </p>
                     <div class="footer-bottom-links">
-                        <a href="#">Política de Privacidade</a>
-                        <span class="separator">•</span>
-                        <a href="#">Termos de Uso</a>
-                        <span class="separator">•</span>
-                        <a href="#">Contato</a>
+                        {% if site_config.desenvolvedor_nome %}
+                        <a href="https://omegasistem.com.br" target="_blank" rel="noopener noreferrer" title="Desenvolvido por {{ site_config.desenvolvedor_nome }}">
+                            <i class="fa-solid fa-code"></i> Desenvolvido por {{ site_config.desenvolvedor_nome }}
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
                 <button id="scrollToTop" class="scroll-top-btn" title="Voltar ao topo">
@@ -150,6 +160,259 @@
             </div>
         </div>
     </footer>
+
+    <!-- Modal Política de Privacidade -->
+    <div id="privacidadeModal" class="modal-politica">
+        <div class="modal-content-politica">
+            <div class="modal-header-politica">
+                <h2><i class="fa-solid fa-shield-halved"></i> Política de Privacidade</h2>
+                <button class="modal-close-politica" onclick="closeModal('privacidadeModal')">&times;</button>
+            </div>
+            <div class="modal-body-politica">
+                {% if site_config.politica_privacidade %}
+                    {{ site_config.politica_privacidade|safe }}
+                {% else %}
+                    <p><em>A política de privacidade ainda não foi configurada. Configure em Configurações do Site no painel admin.</em></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Termos de Uso -->
+    <div id="termosModal" class="modal-politica">
+        <div class="modal-content-politica">
+            <div class="modal-header-politica">
+                <h2><i class="fa-solid fa-file-contract"></i> Termos de Uso</h2>
+                <button class="modal-close-politica" onclick="closeModal('termosModal')">&times;</button>
+            </div>
+            <div class="modal-body-politica">
+                {% if site_config.termos_uso %}
+                    {{ site_config.termos_uso|safe }}
+                {% else %}
+                    <p><em>Os termos de uso ainda não foram configurados. Configure em Configurações do Site no painel admin.</em></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal-politica {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content-politica {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            margin: 3% auto;
+            padding: 0;
+            border: 2px solid #00E5CC;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            box-shadow: 0 8px 32px rgba(0, 229, 204, 0.3);
+            animation: slideDown 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header-politica {
+            background: linear-gradient(135deg, #00E5CC 0%, #FF6B35 50%, #FFE656 100%);
+            padding: 24px 30px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header-politica::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-header-politica h2 {
+            margin: 0;
+            color: #00E5CC;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 8px rgba(0, 229, 204, 0.4);
+        }
+
+        .modal-header-politica i {
+            margin-right: 12px;
+        }
+
+        .modal-close-politica {
+            background: rgba(255, 107, 53, 0.2);
+            border: 2px solid #FF6B35;
+            color: #FF6B35;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close-politica:hover {
+            background: #FF6B35;
+            color: #0a0a0a;
+            transform: rotate(90deg);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.5);
+        }
+
+        .modal-body-politica {
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.9);
+            overflow-y: auto;
+            max-height: calc(85vh - 100px);
+            line-height: 1.8;
+        }
+
+        .modal-body-politica::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .modal-body-politica::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        .modal-body-politica::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 204, 0.3);
+            border-radius: 5px;
+        }
+
+        .modal-body-politica::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 229, 204, 0.5);
+        }
+
+        .modal-body-politica h3 {
+            color: #00E5CC;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+
+        .modal-body-politica h4 {
+            color: #FFE656;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal-body-politica p {
+            margin-bottom: 16px;
+        }
+
+        .modal-body-politica ul, .modal-body-politica ol {
+            margin-left: 20px;
+            margin-bottom: 16px;
+        }
+
+        .modal-body-politica li {
+            margin-bottom: 8px;
+        }
+
+        .modal-body-politica a {
+            color: #00E5CC;
+            text-decoration: underline;
+        }
+
+        .modal-body-politica a:hover {
+            color: #FFE656;
+        }
+
+        .modal-body-politica em {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content-politica {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .modal-header-politica h2 {
+                font-size: 22px;
+            }
+
+            .modal-body-politica {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Funções para controlar os modals
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Fechar modal ao clicar fora do conteúdo
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-politica')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal-politica').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
 
     <script>
         // ===================================
