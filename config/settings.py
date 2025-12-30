@@ -98,12 +98,18 @@ if USE_LOCAL_DB and DEBUG:
     print("⚠️  USANDO SQLITE LOCAL PARA DESENVOLVIMENTO")
 elif DATABASE_URL:
     # PostgreSQL (Supabase) para produção
+    # Para Vercel (serverless), usar CONN_MAX_AGE=0 para evitar pool exhaustion
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=0,  # Não manter conexões persistentes em serverless
             conn_health_checks=True,
         )
+    }
+    # Opções adicionais para PostgreSQL
+    DATABASES['default']['OPTIONS'] = {
+        'connect_timeout': 10,
+        'options': '-c statement_timeout=30000',  # 30 segundos timeout
     }
 else:
     raise Exception("DATABASE_URL não configurado! Configure no .env ou use USE_LOCAL_DB=True para desenvolvimento local.")
