@@ -1,0 +1,436 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    /* Ocultar elementos desnecessários para tela cheia */
+    #content-main > *:not(.full-dashboard) {
+        display: none;
+    }
+    
+    /* Dashboard Full Screen */
+    .full-dashboard {
+        margin: -20px;
+        padding: 0;
+        background: #0a0a0a;
+        min-height: calc(100vh - 80px);
+    }
+    
+    .dashboard-header {
+        background: linear-gradient(135deg, #00E5CC 0%, #FF6B35 50%, #FFE656 100%);
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 10, 10, 0.75);
+        backdrop-filter: blur(10px);
+    }
+    
+    .header-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .dashboard-title {
+        font-size: 48px;
+        font-weight: 700;
+        color: #00E5CC;
+        margin-bottom: 8px;
+        text-shadow: 0 4px 12px rgba(0, 229, 204, 0.4);
+    }
+    
+    .dashboard-subtitle {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        padding: 40px;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    .metric-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(0, 229, 204, 0.2);
+        border-radius: 16px;
+        padding: 28px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00E5CC, #FF6B35);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-8px);
+        border-color: #00E5CC;
+        box-shadow: 0 12px 32px rgba(0, 229, 204, 0.3);
+        background: rgba(0, 229, 204, 0.08);
+    }
+    
+    .metric-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+        filter: drop-shadow(0 4px 8px rgba(0, 229, 204, 0.3));
+    }
+    
+    .metric-value {
+        font-size: 42px;
+        font-weight: 700;
+        color: #00E5CC;
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+    
+    .metric-label {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+    
+    .metric-detail {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.5);
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .metric-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+    }
+    
+    .trend-up {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+    
+    .trend-down {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+    
+    .wide-card {
+        grid-column: span 2;
+    }
+    
+    .quick-actions-section {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 107, 53, 0.2);
+        border-radius: 16px;
+        padding: 28px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #FF6B35;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+    }
+    
+    .action-btn {
+        background: linear-gradient(135deg, rgba(0, 229, 204, 0.15), rgba(0, 229, 204, 0.05));
+        border: 2px solid #00E5CC;
+        color: #00E5CC;
+        padding: 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .action-btn:hover {
+        background: #00E5CC;
+        color: #0a0a0a;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 229, 204, 0.4);
+    }
+    
+    .action-btn .icon {
+        font-size: 24px;
+    }
+    
+    .recent-activity {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 230, 86, 0.2);
+        border-radius: 16px;
+        padding: 28px;
+    }
+    
+    .activity-item {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-time {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 12px;
+        margin-top: 4px;
+    }
+    
+    @media (max-width: 1200px) {
+        .wide-card {
+            grid-column: span 1;
+        }
+        
+        .dashboard-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            padding: 24px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-title {
+            font-size: 32px;
+        }
+        
+        .dashboard-header {
+            padding: 24px;
+        }
+        
+        .metric-card {
+            padding: 20px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="full-dashboard">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">🎲 Mesa Secreta Dashboard</h1>
+            <p class="dashboard-subtitle">Visão geral completa do seu site em tempo real</p>
+        </div>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Métrica: Total de Postagens -->
+        <div class="metric-card">
+            <span class="metric-icon">📝</span>
+            <div class="metric-value">{{ total_postagens|default:"0" }}</div>
+            <div class="metric-label">Total de Postagens</div>
+            <div class="metric-detail">
+                Conteúdos criados no sistema
+            </div>
+        </div>
+        
+        <!-- Métrica: Postagens Publicadas -->
+        <div class="metric-card">
+            <span class="metric-icon">✅</span>
+            <div class="metric-value">{{ postagens_publicadas|default:"0" }}</div>
+            <div class="metric-label">Postagens Publicadas</div>
+            <div class="metric-detail">
+                {{ taxa_publicacao|default:"0" }}% do total
+            </div>
+        </div>
+        
+        <!-- Métrica: Rascunhos -->
+        <div class="metric-card">
+            <span class="metric-icon">📋</span>
+            <div class="metric-value">{{ postagens_rascunho|default:"0" }}</div>
+            <div class="metric-label">Rascunhos</div>
+            <div class="metric-detail">
+                Aguardando publicação
+            </div>
+        </div>
+        
+        <!-- Métrica: Total de Vídeos -->
+        <div class="metric-card">
+            <span class="metric-icon">🎬</span>
+            <div class="metric-value">{{ total_videos|default:"0" }}</div>
+            <div class="metric-label">Vídeos do YouTube</div>
+            <div class="metric-detail">
+                Conteúdo em vídeo
+            </div>
+        </div>
+        
+        <!-- Métrica: Postagens Esta Semana -->
+        <div class="metric-card">
+            <span class="metric-icon">🔥</span>
+            <div class="metric-value">{{ postagens_semana|default:"0" }}</div>
+            <div class="metric-label">Publicadas Esta Semana</div>
+            <div class="metric-detail">
+                Últimos 7 dias
+                <span class="metric-trend trend-up">↑ Ativo</span>
+            </div>
+        </div>
+        
+        <!-- Métrica: Postagens Este Mês -->
+        <div class="metric-card">
+            <span class="metric-icon">📅</span>
+            <div class="metric-value">{{ postagens_mes|default:"0" }}</div>
+            <div class="metric-label">Publicadas Este Mês</div>
+            <div class="metric-detail">
+                Últimos 30 dias
+            </div>
+        </div>
+        
+        <!-- Métrica: Categorias -->
+        <div class="metric-card">
+            <span class="metric-icon">🏷️</span>
+            <div class="metric-value">3</div>
+            <div class="metric-label">Categorias Ativas</div>
+            <div class="metric-detail">
+                Novidades, Dicas, Reviews
+            </div>
+        </div>
+        
+        <!-- Métrica: Média de Postagens -->
+        <div class="metric-card">
+            <span class="metric-icon">📊</span>
+            <div class="metric-value">{{ media_postagens_semana|default:"0" }}</div>
+            <div class="metric-label">Postagens/Semana</div>
+            <div class="metric-detail">
+                Média dos últimos 30 dias
+            </div>
+        </div>
+        
+        <!-- Ações Rápidas (Wide) -->
+        <div class="metric-card quick-actions-section wide-card">
+            <div class="section-title">
+                <span>⚡</span> Ações Rápidas
+            </div>
+            <div class="action-buttons">
+                <a href="{% url 'admin:core_postagem_add' %}" class="action-btn">
+                    <span class="icon">➕</span>
+                    <span>Nova Postagem</span>
+                </a>
+                <a href="{% url 'admin:core_video_add' %}" class="action-btn">
+                    <span class="icon">🎬</span>
+                    <span>Novo Vídeo</span>
+                </a>
+                <a href="{% url 'admin:core_postagem_changelist' %}" class="action-btn">
+                    <span class="icon">📝</span>
+                    <span>Ver Postagens</span>
+                </a>
+                <a href="{% url 'admin:core_video_changelist' %}" class="action-btn">
+                    <span class="icon">🎥</span>
+                    <span>Ver Vídeos</span>
+                </a>
+                <a href="/" target="_blank" class="action-btn">
+                    <span class="icon">🌐</span>
+                    <span>Visitar Site</span>
+                </a>
+                <a href="{% url 'admin:core_postagem_changelist' %}?status__exact=rascunho" class="action-btn">
+                    <span class="icon">✏️</span>
+                    <span>Ver Rascunhos</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Distribuição por Categoria -->
+        <div class="metric-card">
+            <span class="metric-icon">🎮</span>
+            <div class="metric-value">{{ postagens_novidades|default:"0" }}</div>
+            <div class="metric-label">Novidades</div>
+            <div class="metric-detail">
+                Categoria mais popular
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <span class="metric-icon">💡</span>
+            <div class="metric-value">{{ postagens_dicas|default:"0" }}</div>
+            <div class="metric-label">Dicas e Tutoriais</div>
+            <div class="metric-detail">
+                Conteúdo educativo
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <span class="metric-icon">⭐</span>
+            <div class="metric-value">{{ postagens_reviews|default:"0" }}</div>
+            <div class="metric-label">Reviews de Jogos</div>
+            <div class="metric-detail">
+                Análises completas
+            </div>
+        </div>
+        
+        <!-- Última Atividade -->
+        <div class="metric-card recent-activity wide-card">
+            <div class="section-title">
+                <span>📌</span> Última Atividade
+            </div>
+            {% if ultima_postagem %}
+            <div class="activity-item">
+                <strong>📝 Nova postagem:</strong> {{ ultima_postagem.titulo|truncatewords:10 }}
+                <div class="activity-time">{{ ultima_postagem.data_criacao|timesince }} atrás</div>
+            </div>
+            {% endif %}
+            {% if ultimo_video %}
+            <div class="activity-item">
+                <strong>🎬 Novo vídeo:</strong> {{ ultimo_video.titulo|truncatewords:10 }}
+                <div class="activity-time">{{ ultimo_video.data_criacao|timesince }} atrás</div>
+            </div>
+            {% endif %}
+            {% if not ultima_postagem and not ultimo_video %}
+            <div class="activity-item">
+                Nenhuma atividade recente. Comece criando conteúdo!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

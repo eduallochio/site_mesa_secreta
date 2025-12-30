@@ -1,0 +1,64 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content_title %}
+    {{ block.super }}
+    
+    {% if stats %}
+    <div style="background: linear-gradient(135deg, #00E5CC 0%, #00b3a0 100%); 
+                color: #0a0a0a; 
+                padding: 20px; 
+                border-radius: 12px; 
+                margin: 20px 0;
+                box-shadow: 0 4px 12px rgba(0, 229, 204, 0.2);">
+        <h3 style="margin: 0 0 15px 0; font-size: 18px; font-weight: 700;">
+            📊 Estatísticas das Postagens
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ stats.total }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">📝 Total de Postagens</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ stats.publicadas }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">✅ Publicadas</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ stats.rascunhos }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">📝 Rascunhos</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ stats.esta_semana }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">🔥 Esta Semana</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if video_stats %}
+    <div style="background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%); 
+                color: white; 
+                padding: 20px; 
+                border-radius: 12px; 
+                margin: 20px 0;
+                box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);">
+        <h3 style="margin: 0 0 15px 0; font-size: 18px; font-weight: 700;">
+            🎬 Estatísticas dos Vídeos
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ video_stats.total }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">▶️ Total de Vídeos</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ video_stats.esta_semana }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">🔥 Esta Semana</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">{{ video_stats.este_mes }}</div>
+                <div style="font-size: 13px; opacity: 0.9;">📅 Este Mês</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
