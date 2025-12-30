@@ -83,11 +83,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # Configuração para Vercel (PostgreSQL) ou local (SQLite)
-if os.environ.get('VERCEL_ENV'):
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
     # Produção no Vercel - Usar PostgreSQL
     DATABASES = {
         'default': dj_database_url.config(
-            default='postgresql://user:password@localhost:5432/dbname',
+            default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
         )
