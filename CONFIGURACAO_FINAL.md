@@ -58,7 +58,7 @@ Adicione estas variáveis:
 
 **DATABASE_URL**
 ```
-postgresql://postgres:;EH;z9ZL>v}qk;,X@db.szlilldcemfhimfikqig.supabase.co:5432/postgres
+postgresql://postgres:C%23Sh%25s0%7CF%3A8mAQ%23X@db.szlilldcemfhimfikqig.supabase.co:5432/postgres
 ```
 
 **DEBUG**
