@@ -21,6 +21,12 @@
                 <li><a href="{% url 'core:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Início</a></li>
                 <li><a href="{% url 'core:postagem_list' %}" class="nav-link {% if 'postagem' in request.resolver_match.url_name %}active{% endif %}">Postagens</a></li>
                 <li><a href="{% url 'core:video_list' %}" class="nav-link {% if 'video' in request.resolver_match.url_name %}active{% endif %}">Vídeos</a></li>
+                <li>
+                    <button id="themeToggle" class="theme-toggle" aria-label="Alternar tema">
+                        <i class="fas fa-sun sun-icon"></i>
+                        <i class="fas fa-moon moon-icon"></i>
+                    </button>
+                </li>
             </ul>
         </div>
     </nav>
@@ -101,9 +107,6 @@
                             <i class="fa-brands fa-tiktok"></i>
                         </a>
                     </div>
-                    <div class="footer-newsletter">
-                        <p class="newsletter-text">📧 Em breve: Newsletter exclusiva!</p>
-                    </div>
                 </div>
 
                 <!-- Apoie o Projeto -->
@@ -150,6 +153,38 @@
     </footer>
 
     <script>
+        // ===================================
+        // THEME TOGGLE (Modo Claro/Escuro)
+        // ===================================
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Verificar preferência salva ou usar tema do sistema
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+        
+        // Aplicar tema inicial
+        if (currentTheme === 'light') {
+            htmlElement.setAttribute('data-theme', 'light');
+        }
+        
+        // Toggle do tema
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = htmlElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                if (newTheme === 'light') {
+                    htmlElement.setAttribute('data-theme', 'light');
+                } else {
+                    htmlElement.removeAttribute('data-theme');
+                }
+                
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+
         // Botão Voltar ao Topo - com verificação de segurança
         const scrollTopBtn = document.getElementById('scrollToTop');
         
