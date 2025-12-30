@@ -7,10 +7,10 @@
 {{ block.super }}
 <style>
     /* ========================================
-       MESA SECRETA ADMIN - TEMA GLOBAL
+       MESA SECRETA ADMIN - MODO ESCURO PERMANENTE
        ======================================== */
     
-    /* === CORES === */
+    /* === CORES TEMA ESCURO === */
     :root {
         --ms-ciano: #00E5CC;
         --ms-laranja: #FF6B35;
@@ -20,6 +20,19 @@
         --ms-border: rgba(0, 229, 204, 0.2);
         --ms-text: rgba(255, 255, 255, 0.9);
         --ms-text-muted: rgba(255, 255, 255, 0.6);
+    }
+    
+    /* Forçar modo escuro em todos os casos */
+    body, [data-theme="light"], [data-theme="dark"] {
+        --ms-ciano: #00E5CC;
+        --ms-laranja: #FF6B35;
+        --ms-amarelo: #FFE656;
+        --ms-dark: #0a0a0a;
+        --ms-dark-light: #1a1a1a;
+        --ms-border: rgba(0, 229, 204, 0.2);
+        --ms-text: rgba(255, 255, 255, 0.9);
+        --ms-text-muted: rgba(255, 255, 255, 0.6);
+        color-scheme: dark;
     }
     
     /* === BACKGROUND GLOBAL === */
@@ -186,7 +199,7 @@
     }
     
     tbody tr {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--ms-border);
     }
     
     tbody tr:hover {
@@ -195,6 +208,17 @@
     
     tbody th, tbody td {
         color: var(--ms-text) !important;
+    }
+    
+    /* Links em tabelas */
+    tbody a {
+        color: var(--ms-ciano) !important;
+        font-weight: 500;
+    }
+    
+    tbody a:hover {
+        color: var(--ms-laranja) !important;
+        text-decoration: underline;
     }
     
     /* === BOTÕES === */
@@ -505,16 +529,16 @@
     }
     
     ::-webkit-scrollbar-track {
-        background: var(--ms-dark);
+        background: var(--ms-dark-light);
     }
     
     ::-webkit-scrollbar-thumb {
-        background: rgba(0, 229, 204, 0.3);
+        background: var(--ms-ciano);
         border-radius: 6px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 229, 204, 0.5);
+        background: var(--ms-laranja);
     }
 </style>
 {% endblock %}
