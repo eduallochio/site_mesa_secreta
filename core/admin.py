@@ -595,7 +595,7 @@ class ConfiguracaoSiteAdmin(admin.ModelAdmin):
             'description': 'URLs das redes sociais (deixe em branco para ocultar)'
         }),
         ('ℹ️ Informações do Site', {
-            'fields': ('sobre_texto', 'email_contato', 'desenvolvedor_nome'),
+            'fields': ('sobre_texto', 'email_contato', 'desenvolvedor_nome', 'desenvolvedor_url'),
             'description': 'Informações exibidas no footer'
         }),
         ('� Políticas e Termos', {
