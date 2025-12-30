@@ -1,0 +1,6 @@
+Django==6.0
+django-admin-interface==0.32.0
+django-ckeditor==6.7.3
+django-colorfield==0.14.0
+pillow==12.0.0
+feedparser==6.0.12
