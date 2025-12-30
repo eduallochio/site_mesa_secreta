@@ -4,3 +4,5 @@ django-ckeditor==6.7.3
 django-colorfield==0.14.0
 pillow==12.0.0
 feedparser==6.0.12
+psycopg2-binary==2.9.10
+dj-database-url==2.2.0
