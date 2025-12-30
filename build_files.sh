@@ -10,6 +10,9 @@ python manage.py collectstatic --noinput --clear
 if [ -n "$DATABASE_URL" ]; then
     echo "Running migrations..."
     python manage.py migrate --noinput
+    
+    echo "Creating superuser..."
+    python manage.py create_superuser_auto
 else
     echo "Skipping migrations (no DATABASE_URL found)"
 fi
