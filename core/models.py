@@ -47,6 +47,11 @@ class ConfiguracaoSite(models.Model):
     meta_description = models.CharField('Meta Description', max_length=160, blank=True)
     meta_keywords = models.CharField('Meta Keywords', max_length=255, blank=True)
     
+    # Banner Promocional
+    banner_promocional = models.ImageField('Banner Promocional', upload_to='banners/', blank=True, null=True, help_text='Banner exibido na home (Tamanho recomendado: 1200x250px)')
+    banner_url = models.URLField('Link do Banner', blank=True, help_text='URL para onde o banner deve redirecionar (opcional)')
+    banner_ativo = models.BooleanField('Banner Ativo', default=True, help_text='Exibir o banner na página inicial')
+    
     class Meta:
         verbose_name = 'Configuração do Site'
         verbose_name_plural = 'Configurações do Site'

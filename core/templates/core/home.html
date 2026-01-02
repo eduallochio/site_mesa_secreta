@@ -98,6 +98,30 @@
     </div>
 </section>
 
+<!-- Banner Promocional -->
+{% if config.banner_ativo %}
+<section class="promotional-banner">
+    <div class="container">
+        {% if config.banner_url %}
+        <a href="{{ config.banner_url }}" target="_blank" class="banner-wrapper">
+        {% else %}
+        <div class="banner-wrapper">
+        {% endif %}
+            {% if config.banner_promocional %}
+            <img src="{{ config.banner_promocional.url }}" alt="Banner Promocional" class="banner-image">
+            {% else %}
+            <img src="{% static 'core/img/banner.jpg' %}" alt="Banner Promocional" class="banner-image">
+            {% endif %}
+            <div class="banner-overlay"></div>
+        {% if config.banner_url %}
+        </a>
+        {% else %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
 <!-- Postagens em Destaque -->
 <section class="section">
     <div class="container">

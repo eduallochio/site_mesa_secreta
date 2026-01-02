@@ -153,7 +153,7 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
                 'border-radius: 8px; border: 2px solid #00E5CC; box-shadow: 0 2px 8px rgba(0,229,204,0.2);" />',
                 obj.imagem_capa.url
             )
-        return format_html('<span style="color: #999;">⚠️ Sem imagem</span>')
+        return mark_safe('<span style="color: #999;">⚠️ Sem imagem</span>')
     preview_imagem.short_description = '🖼️ Preview'
     
     def preview_imagem_atual(self, obj):
@@ -233,7 +233,7 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
                 '<span style="color: {}; font-size: 12px;">{}</span>',
                 color, texto
             )
-        return format_html('<span style="color: #999; font-size: 12px;">-</span>')
+        return mark_safe('<span style="color: #999; font-size: 12px;">-</span>')
     dias_desde_publicacao.short_description = '📅 Publicado'
     dias_desde_publicacao.admin_order_field = 'data_publicacao'
     
@@ -268,7 +268,7 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
                 '👁️ Visualizar</a>',
                 obj.pk
             )
-        return format_html(
+        return mark_safe(
             '<span style="color: #999; font-size: 12px;">Não publicado</span>'
         )
     acoes_rapidas.short_description = '⚡ Ações'
@@ -276,7 +276,7 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
     def painel_estatisticas(self, obj):
         """Painel detalhado de estatísticas da postagem"""
         if not obj.pk:
-            return format_html('<p style="color: #999;">Salve a postagem primeiro para ver estatísticas.</p>')
+            return mark_safe('<p style="color: #999;">Salve a postagem primeiro para ver estatísticas.</p>')
         
         total_views = obj.get_total_visualizacoes()
         tempo_medio = obj.get_tempo_medio_visualizacao()
@@ -530,7 +530,7 @@ class VideoAdmin(admin.ModelAdmin, ExportCsvMixin):
                 '</a>',
                 obj.get_youtube_url(), obj.youtube_id
             )
-        return format_html('<span style="color: #999;">⚠️ ID inválido</span>')
+        return mark_safe('<span style="color: #999;">⚠️ ID inválido</span>')
     preview_thumbnail.short_description = '🖼️ Thumbnail'
     
     def duracao_info(self, obj):
@@ -717,6 +717,10 @@ class ConfiguracaoSiteAdmin(admin.ModelAdmin):
             'description': 'Configure para buscar inscritos automaticamente. <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Obter API Key</a>',
             'classes': ('collapse',)
         }),
+        ('🎯 Banner Promocional', {
+            'fields': ('banner_preview', 'banner_promocional', 'banner_url', 'banner_ativo'),
+            'description': '📐 <strong>Tamanho recomendado:</strong> 1200x250px para melhor visualização'
+        }),
         ('✍️ Textos da Home', {
             'fields': ('hero_titulo', 'hero_descricao'),
             'description': 'Textos principais da página inicial'
@@ -741,7 +745,26 @@ class ConfiguracaoSiteAdmin(admin.ModelAdmin):
         }),
     )
     
-    readonly_fields = ('inscritos_canal_info',)
+    readonly_fields = ('inscritos_canal_info', 'banner_preview')
+    
+    def banner_preview(self, obj):
+        """Exibe preview do banner atual"""
+        if obj.banner_promocional:
+            return mark_safe(
+                f'<div style="margin: 10px 0;">'
+                f'<img src="{obj.banner_promocional.url}" style="max-width: 100%; height: auto; max-height: 250px; border-radius: 12px; '
+                f'box-shadow: 0 4px 12px rgba(0, 229, 204, 0.3); border: 2px solid rgba(0, 229, 204, 0.2);" />'
+                f'<p style="color: #666; margin-top: 10px; font-size: 13px;">'
+                f'✅ <strong>Banner ativo:</strong> {"Sim" if obj.banner_ativo else "Não"}</p>'
+                f'</div>'
+            )
+        return mark_safe(
+            '<div style="padding: 20px; background: rgba(255, 152, 0, 0.1); border-radius: 8px; border-left: 4px solid #FF9800;">'
+            '<p style="color: #FF9800; font-size: 14px; margin: 0;">📸 Nenhum banner configurado</p>'
+            '<small style="color: #999;">Será usado o banner padrão</small>'
+            '</div>'
+        )
+    banner_preview.short_description = 'Preview do Banner'
     
     def inscritos_canal_info(self, obj):
         """Exibe informações sobre os inscritos do YouTube"""

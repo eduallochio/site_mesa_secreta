@@ -159,6 +159,17 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Supabase Configuration
+SUPABASE_URL = config('SUPABASE_URL', default='')
+SUPABASE_KEY = config('SUPABASE_KEY', default='')
+SUPABASE_BUCKET_NAME = config('SUPABASE_BUCKET_NAME', default='media')
+
+# Usar Supabase Storage se as credenciais estiverem configuradas
+USE_SUPABASE_STORAGE = config('USE_SUPABASE_STORAGE', default='False', cast=bool)
+
+if USE_SUPABASE_STORAGE and SUPABASE_URL and SUPABASE_KEY:
+    DEFAULT_FILE_STORAGE = 'core.storage.SupabaseStorage'
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
