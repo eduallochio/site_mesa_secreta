@@ -167,8 +167,27 @@ SUPABASE_BUCKET_NAME = config('SUPABASE_BUCKET_NAME', default='media')
 # Usar Supabase Storage se as credenciais estiverem configuradas
 USE_SUPABASE_STORAGE = config('USE_SUPABASE_STORAGE', default='False', cast=bool)
 
+# Configuração de Storage
 if USE_SUPABASE_STORAGE and SUPABASE_URL and SUPABASE_KEY:
-    DEFAULT_FILE_STORAGE = 'core.storage.SupabaseStorage'
+    # Django 6.0+ usa STORAGES ao invés de DEFAULT_FILE_STORAGE
+    STORAGES = {
+        "default": {
+            "BACKEND": "core.storage.SupabaseStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+else:
+    # Fallback para filesystem local (apenas desenvolvimento)
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
