@@ -134,6 +134,60 @@ class Postagem(models.Model):
     
     def __str__(self):
         return self.titulo
+    
+    def get_total_visualizacoes(self):
+        """Retorna o total de visualizações únicas desta postagem"""
+        return EstatisticaVisualizacao.objects.filter(
+            tipo_conteudo='postagem',
+            conteudo_id=self.id
+        ).values('session_key').distinct().count()
+    
+    def get_tempo_medio_visualizacao(self):
+        """Retorna o tempo médio de visualização em segundos"""
+        from django.db.models import Avg
+        resultado = EstatisticaVisualizacao.objects.filter(
+            tipo_conteudo='postagem',
+            conteudo_id=self.id,
+            tempo_visualizacao__gt=0
+        ).aggregate(Avg('tempo_visualizacao'))
+        
+        tempo_medio = resultado['tempo_visualizacao__avg']
+        return round(tempo_medio) if tempo_medio else 0
+    
+    def get_scroll_medio(self):
+        """Retorna a profundidade média de scroll"""
+        from django.db.models import Avg
+        resultado = EstatisticaVisualizacao.objects.filter(
+            tipo_conteudo='postagem',
+            conteudo_id=self.id
+        ).aggregate(Avg('scroll_profundidade'))
+        
+        scroll_medio = resultado['scroll_profundidade__avg']
+        return round(scroll_medio) if scroll_medio else 0
+    
+    def get_visualizacoes_ultimos_30_dias(self):
+        """Visualizações dos últimos 30 dias"""
+        from datetime import timedelta
+        data_limite = timezone.now() - timedelta(days=30)
+        
+        return EstatisticaVisualizacao.objects.filter(
+            tipo_conteudo='postagem',
+            conteudo_id=self.id,
+            data_visualizacao__gte=data_limite
+        ).values('session_key').distinct().count()
+    
+    def get_taxa_engajamento(self):
+        """Taxa de engajamento baseada no tempo e scroll"""
+        tempo_medio = self.get_tempo_medio_visualizacao()
+        scroll_medio = self.get_scroll_medio()
+        
+        # Considera engajado se passou mais de 30s E rolou mais de 50%
+        if tempo_medio >= 30 and scroll_medio >= 50:
+            return 'Alto'
+        elif tempo_medio >= 15 and scroll_medio >= 25:
+            return 'Médio'
+        else:
+            return 'Baixo'
 
 
 class Video(models.Model):
@@ -160,3 +214,46 @@ class Video(models.Model):
     def get_embed_url(self):
         """Retorna a URL para incorporar o vídeo"""
         return f'https://www.youtube.com/embed/{self.youtube_id}'
+
+
+class EstatisticaVisualizacao(models.Model):
+    """Modelo para rastrear visualizações de conteúdo"""
+    
+    TIPO_CONTEUDO_CHOICES = [
+        ('postagem', 'Postagem'),
+        ('video', 'Vídeo'),
+        ('home', 'Página Inicial'),
+    ]
+    
+    tipo_conteudo = models.CharField('Tipo de Conteúdo', max_length=20, choices=TIPO_CONTEUDO_CHOICES)
+    conteudo_id = models.IntegerField('ID do Conteúdo', null=True, blank=True, help_text='ID da postagem ou vídeo (null para home)')
+    conteudo_titulo = models.CharField('Título do Conteúdo', max_length=255, blank=True)
+    
+    # Informações da sessão
+    session_key = models.CharField('Session Key', max_length=40, db_index=True)
+    
+    # Dados técnicos
+    ip_address = models.GenericIPAddressField('IP Address', null=True, blank=True)
+    user_agent = models.TextField('User Agent', blank=True)
+    
+    # Métricas de tempo
+    tempo_visualizacao = models.IntegerField('Tempo de Visualização (segundos)', default=0, help_text='Tempo que o usuário passou na página')
+    scroll_profundidade = models.IntegerField('Profundidade de Scroll (%)', default=0, help_text='Porcentagem da página que foi rolada')
+    
+    # Data e hora
+    data_visualizacao = models.DateTimeField('Data de Visualização', auto_now_add=True, db_index=True)
+    data_saida = models.DateTimeField('Data de Saída', null=True, blank=True, help_text='Quando o usuário saiu da página')
+    
+    class Meta:
+        verbose_name = 'Estatística de Visualização'
+        verbose_name_plural = 'Estatísticas de Visualizações'
+        ordering = ['-data_visualizacao']
+        indexes = [
+            models.Index(fields=['tipo_conteudo', 'conteudo_id']),
+            models.Index(fields=['data_visualizacao']),
+        ]
+    
+    def __str__(self):
+        if self.conteudo_titulo:
+            return f'{self.tipo_conteudo}: {self.conteudo_titulo} - {self.data_visualizacao.strftime("%d/%m/%Y %H:%M")}'
+        return f'{self.tipo_conteudo} - {self.data_visualizacao.strftime("%d/%m/%Y %H:%M")}'

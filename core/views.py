@@ -3,7 +3,12 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Postagem, Video, ConfiguracaoSite
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+import json
+from .models import Postagem, Video, ConfiguracaoSite, EstatisticaVisualizacao
 
 
 def home(request):
@@ -86,5 +91,71 @@ def logout_view(request):
     logout(request)
     return redirect('core:home')
 
-    def get_queryset(self):
-        return Video.objects.order_by('-data_publicacao')
+
+@require_http_methods(["POST"])
+def track_view(request):
+    """API endpoint para registrar visualizações e métricas"""
+    try:
+        data = json.loads(request.body)
+        
+        # Obter ou criar session key
+        if not request.session.session_key:
+            request.session.create()
+        
+        # Obter IP do usuário
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip_address = x_forwarded_for.split(',')[0]
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+        
+        # Criar ou atualizar estatística
+        tipo_conteudo = data.get('tipo_conteudo', 'home')
+        conteudo_id = data.get('conteudo_id')
+        
+        # Buscar estatística existente ou criar nova
+        stats, created = EstatisticaVisualizacao.objects.get_or_create(
+            session_key=request.session.session_key,
+            tipo_conteudo=tipo_conteudo,
+            conteudo_id=conteudo_id,
+            defaults={
+                'conteudo_titulo': data.get('conteudo_titulo', ''),
+                'ip_address': ip_address,
+                'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+            }
+        )
+        
+        # Atualizar métricas
+        stats.tempo_visualizacao = data.get('tempo_visualizacao', 0)
+        stats.scroll_profundidade = data.get('scroll_profundidade', 0)
+        stats.data_saida = timezone.now()
+        stats.save()
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Estatística registrada com sucesso'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=400)
+
+
+def get_postagem_stats(request, pk):
+    """API endpoint para obter estatísticas de uma postagem (somente admin)"""
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Sem permissão'}, status=403)
+    
+    postagem = get_object_or_404(Postagem, pk=pk)
+    
+    stats = {
+        'total_visualizacoes': postagem.get_total_visualizacoes(),
+        'tempo_medio': postagem.get_tempo_medio_visualizacao(),
+        'scroll_medio': postagem.get_scroll_medio(),
+        'visualizacoes_30_dias': postagem.get_visualizacoes_ultimos_30_dias(),
+        'taxa_engajamento': postagem.get_taxa_engajamento(),
+    }
+    
+    return JsonResponse(stats)

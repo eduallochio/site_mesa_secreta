@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.db.models import Sum
 import csv
-from .models import Postagem, Video, ConfiguracaoSite
+from .models import Postagem, Video, ConfiguracaoSite, EstatisticaVisualizacao
 
 
 class ExportCsvMixin:
@@ -36,7 +36,7 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
     """Admin personalizado para Postagens com melhorias de UX e melhores práticas"""
     
     list_display = ('titulo_com_status', 'categoria_badge', 'preview_imagem', 
-                   'visualizacoes_info', 'data_publicacao', 'dias_desde_publicacao', 'acoes_rapidas')
+                   'metricas_visualizacao', 'data_publicacao', 'dias_desde_publicacao', 'acoes_rapidas')
     list_display_links = ('titulo_com_status',)
     list_filter = ('categoria', 'status', 'data_publicacao', 'data_criacao')
     search_fields = ('titulo', 'subtitulo', 'conteudo')
@@ -67,13 +67,17 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
             'classes': ('collapse',),
             'description': 'Agende a data de publicação'
         }),
+        ('📊 Estatísticas e Métricas', {
+            'fields': ('painel_estatisticas',),
+            'description': 'Métricas de desempenho desta postagem'
+        }),
         ('ℹ️ Informações do Sistema', {
             'fields': ('data_criacao', 'data_atualizacao', 'contador_info'),
             'classes': ('collapse',),
         }),
     )
     
-    readonly_fields = ('data_criacao', 'data_atualizacao', 'preview_imagem_atual', 'contador_info')
+    readonly_fields = ('data_criacao', 'data_atualizacao', 'preview_imagem_atual', 'contador_info', 'painel_estatisticas')
     
     # Configurações de salvamento
     save_on_top = True
@@ -171,8 +175,41 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
         )
     preview_imagem_atual.short_description = 'Preview Atual'
     
+    def metricas_visualizacao(self, obj):
+        """Exibe métricas detalhadas de visualização"""
+        total_views = obj.get_total_visualizacoes()
+        tempo_medio = obj.get_tempo_medio_visualizacao()
+        scroll_medio = obj.get_scroll_medio()
+        taxa_engajamento = obj.get_taxa_engajamento()
+        
+        # Definir cores para taxa de engajamento
+        cor_engajamento = {
+            'Alto': '#4CAF50',
+            'Médio': '#FF9800',
+            'Baixo': '#f44336'
+        }.get(taxa_engajamento, '#999')
+        
+        # Converter tempo médio para minutos e segundos
+        minutos = tempo_medio // 60
+        segundos = tempo_medio % 60
+        tempo_texto = f'{minutos}m {segundos}s' if minutos > 0 else f'{segundos}s'
+        
+        return format_html(
+            '<div style="font-size: 11px; line-height: 1.4;">'
+            '<div><strong style="color: #00E5CC;">👁️ {}</strong> views</div>'
+            '<div>⏱️ {} | 📊 {}%</div>'
+            '<div>Engajamento: <span style="color: {}; font-weight: bold;">{}</span></div>'
+            '</div>',
+            total_views,
+            tempo_texto,
+            scroll_medio,
+            cor_engajamento,
+            taxa_engajamento
+        )
+    metricas_visualizacao.short_description = '📈 Métricas'
+    
     def visualizacoes_info(self, obj):
-        """Informações sobre visualizações (placeholder para futura implementação)"""
+        """Informações sobre visualizações (mantido para compatibilidade)"""
         return mark_safe('<span style="color: #666; font-size: 12px;">🔜 Em breve</span>')
     visualizacoes_info.short_description = '👁️ Views'
     
@@ -235,6 +272,100 @@ class PostagemAdmin(admin.ModelAdmin, ExportCsvMixin):
             '<span style="color: #999; font-size: 12px;">Não publicado</span>'
         )
     acoes_rapidas.short_description = '⚡ Ações'
+    
+    def painel_estatisticas(self, obj):
+        """Painel detalhado de estatísticas da postagem"""
+        if not obj.pk:
+            return format_html('<p style="color: #999;">Salve a postagem primeiro para ver estatísticas.</p>')
+        
+        total_views = obj.get_total_visualizacoes()
+        tempo_medio = obj.get_tempo_medio_visualizacao()
+        scroll_medio = obj.get_scroll_medio()
+        views_30_dias = obj.get_visualizacoes_ultimos_30_dias()
+        taxa_engajamento = obj.get_taxa_engajamento()
+        
+        # Converter tempo médio para formato legível
+        minutos = tempo_medio // 60
+        segundos = tempo_medio % 60
+        tempo_texto = f'{minutos}m {segundos}s' if minutos > 0 else f'{segundos}s'
+        
+        # Cores para engajamento
+        cor_engajamento = {
+            'Alto': '#4CAF50',
+            'Médio': '#FF9800',
+            'Baixo': '#f44336'
+        }.get(taxa_engajamento, '#999')
+        
+        return format_html(
+            '<div style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); '
+            'border: 2px solid #00E5CC; border-radius: 12px; padding: 24px; margin: 10px 0;">'
+            
+            '<h3 style="color: #00E5CC; margin: 0 0 20px 0; font-size: 18px;">'
+            '<i class="fas fa-chart-line"></i> Métricas de Desempenho</h3>'
+            
+            '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">'
+            
+            # Total de Visualizações
+            '<div style="background: rgba(0, 229, 204, 0.1); border-left: 4px solid #00E5CC; '
+            'padding: 16px; border-radius: 8px;">'
+            '<div style="color: #00E5CC; font-size: 12px; text-transform: uppercase; '
+            'letter-spacing: 1px; margin-bottom: 8px;">👁️ Total de Visualizações</div>'
+            '<div style="color: #fff; font-size: 32px; font-weight: bold;">{}</div>'
+            '<div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 4px;">'
+            'Visualizações únicas</div>'
+            '</div>'
+            
+            # Últimos 30 dias
+            '<div style="background: rgba(255, 107, 53, 0.1); border-left: 4px solid #FF6B35; '
+            'padding: 16px; border-radius: 8px;">'
+            '<div style="color: #FF6B35; font-size: 12px; text-transform: uppercase; '
+            'letter-spacing: 1px; margin-bottom: 8px;">📅 Últimos 30 Dias</div>'
+            '<div style="color: #fff; font-size: 32px; font-weight: bold;">{}</div>'
+            '<div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 4px;">'
+            'Views recentes</div>'
+            '</div>'
+            
+            # Tempo médio
+            '<div style="background: rgba(255, 230, 86, 0.1); border-left: 4px solid #FFE656; '
+            'padding: 16px; border-radius: 8px;">'
+            '<div style="color: #FFE656; font-size: 12px; text-transform: uppercase; '
+            'letter-spacing: 1px; margin-bottom: 8px;">⏱️ Tempo Médio</div>'
+            '<div style="color: #fff; font-size: 32px; font-weight: bold;">{}</div>'
+            '<div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 4px;">'
+            'Por visualização</div>'
+            '</div>'
+            
+            # Scroll médio
+            '<div style="background: rgba(103, 58, 183, 0.1); border-left: 4px solid #673AB7; '
+            'padding: 16px; border-radius: 8px;">'
+            '<div style="color: #673AB7; font-size: 12px; text-transform: uppercase; '
+            'letter-spacing: 1px; margin-bottom: 8px;">📊 Scroll Médio</div>'
+            '<div style="color: #fff; font-size: 32px; font-weight: bold;">{}%</div>'
+            '<div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 4px;">'
+            'Da página rolada</div>'
+            '</div>'
+            
+            '</div>'
+            
+            # Taxa de Engajamento
+            '<div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; '
+            'padding: 16px; margin-top: 16px; text-align: center;">'
+            '<div style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 8px;">'
+            'Taxa de Engajamento</div>'
+            '<div style="color: {}; font-size: 24px; font-weight: bold;">{}</div>'
+            '<div style="color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 4px;">'
+            'Baseado em tempo e scroll</div>'
+            '</div>'
+            
+            '</div>',
+            total_views,
+            views_30_dias,
+            tempo_texto,
+            scroll_medio,
+            cor_engajamento,
+            taxa_engajamento
+        )
+    painel_estatisticas.short_description = 'Estatísticas Detalhadas'
     
     # Ações em massa
     def publicar_postagens(self, request, queryset):
@@ -647,6 +778,61 @@ class ConfiguracaoSiteAdmin(admin.ModelAdmin):
         # Redirecionar para edição da única instância
         config = ConfiguracaoSite.get_config()
         return self.changeform_view(request, str(config.pk), '', extra_context)
+
+
+@admin.register(EstatisticaVisualizacao)
+class EstatisticaVisualizacaoAdmin(admin.ModelAdmin):
+    """Admin para visualizar estatísticas de acesso"""
+    
+    list_display = ('tipo_conteudo', 'conteudo_titulo', 'metricas_badge', 'data_visualizacao', 'ip_address')
+    list_filter = ('tipo_conteudo', 'data_visualizacao')
+    search_fields = ('conteudo_titulo', 'ip_address', 'session_key')
+    date_hierarchy = 'data_visualizacao'
+    list_per_page = 50
+    readonly_fields = ('tipo_conteudo', 'conteudo_id', 'conteudo_titulo', 
+                      'session_key', 'ip_address', 'user_agent', 'data_visualizacao',
+                      'tempo_visualizacao', 'scroll_profundidade', 'data_saida')
+    
+    def has_add_permission(self, request):
+        """Desabilitar adição manual"""
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        """Apenas visualização"""
+        return False
+    
+    def metricas_badge(self, obj):
+        """Exibe métricas em formato badge"""
+        minutos = obj.tempo_visualizacao // 60
+        segundos = obj.tempo_visualizacao % 60
+        tempo_texto = f'{minutos}m {segundos}s' if minutos > 0 else f'{segundos}s'
+        
+        return format_html(
+            '<div style="font-size: 11px;">'
+            '<span style="background: #00E5CC; color: #0a0a0a; padding: 3px 8px; '
+            'border-radius: 4px; margin-right: 4px;">⏱️ {}</span>'
+            '<span style="background: #FF6B35; color: #fff; padding: 3px 8px; '
+            'border-radius: 4px;">📊 {}%</span>'
+            '</div>',
+            tempo_texto,
+            obj.scroll_profundidade
+        )
+    metricas_badge.short_description = '📈 Métricas'
+    
+    fieldsets = (
+        ('Conteúdo', {
+            'fields': ('tipo_conteudo', 'conteudo_id', 'conteudo_titulo')
+        }),
+        ('Métricas de Engajamento', {
+            'fields': ('tempo_visualizacao', 'scroll_profundidade', 'data_saida')
+        }),
+        ('Informações da Sessão', {
+            'fields': ('session_key', 'ip_address', 'user_agent')
+        }),
+        ('Data e Hora', {
+            'fields': ('data_visualizacao',)
+        }),
+    )
 
 
 # Registrar no admin_site customizado também

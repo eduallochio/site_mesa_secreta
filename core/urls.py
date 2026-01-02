@@ -10,4 +10,8 @@ urlpatterns = [
     path('videos/', views.VideoListView.as_view(), name='video_list'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    
+    # API de rastreamento
+    path('api/track-view/', views.track_view, name='track_view'),
+    path('api/postagem/<int:pk>/stats/', views.get_postagem_stats, name='postagem_stats'),
 ]

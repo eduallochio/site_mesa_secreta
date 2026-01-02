@@ -160,6 +160,29 @@
             </div>
         </div>
     </footer>
+    
+    <!-- Banner de Cookies -->
+    <div id="cookieBanner" class="cookie-banner">
+        <div class="cookie-content">
+            <div class="cookie-icon">
+                <i class="fa-solid fa-cookie-bite"></i>
+            </div>
+            <div class="cookie-text">
+                <h3>🍪 Cookies & Privacidade</h3>
+                <p>Utilizamos cookies para melhorar sua experiência, analisar o tráfego do site e personalizar conteúdo. 
+                Ao continuar navegando, você concorda com nossa 
+                <a href="#" onclick="openModal('privacidadeModal'); return false;">Política de Privacidade</a>.</p>
+            </div>
+            <div class="cookie-actions">
+                <button onclick="acceptCookies()" class="cookie-btn cookie-accept">
+                    <i class="fa-solid fa-check"></i> Aceitar
+                </button>
+                <button onclick="rejectCookies()" class="cookie-btn cookie-reject">
+                    <i class="fa-solid fa-times"></i> Rejeitar
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Política de Privacidade -->
     <div id="privacidadeModal" class="modal-politica">
@@ -208,6 +231,182 @@
     </div>
 
     <style>
+        /* ===================================
+           COOKIE BANNER STYLES
+           =================================== */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(26, 26, 26, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-top: 3px solid #00E5CC;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .cookie-banner.show {
+            transform: translateY(0);
+        }
+        
+        [data-theme="light"] .cookie-banner {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 249, 250, 0.98) 100%);
+            border-top-color: #00a896;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+        }
+        
+        .cookie-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .cookie-icon {
+            font-size: 48px;
+            color: #00E5CC;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        [data-theme="light"] .cookie-icon {
+            color: #00a896;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .cookie-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .cookie-text h3 {
+            margin: 0 0 8px 0;
+            color: #00E5CC;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        [data-theme="light"] .cookie-text h3 {
+            color: #00a896;
+        }
+        
+        .cookie-text p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        [data-theme="light"] .cookie-text p {
+            color: rgba(0, 0, 0, 0.85);
+        }
+        
+        .cookie-text a {
+            color: #FFE656;
+            text-decoration: underline;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .cookie-text a:hover {
+            color: #00E5CC;
+        }
+        
+        [data-theme="light"] .cookie-text a {
+            color: #d84315;
+        }
+        
+        [data-theme="light"] .cookie-text a:hover {
+            color: #00a896;
+        }
+        
+        .cookie-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .cookie-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .cookie-accept {
+            background: linear-gradient(135deg, #00E5CC 0%, #00a896 100%);
+            color: #0a0a0a;
+            box-shadow: 0 4px 12px rgba(0, 229, 204, 0.3);
+        }
+        
+        .cookie-accept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 229, 204, 0.4);
+        }
+        
+        .cookie-reject {
+            background: rgba(255, 107, 53, 0.2);
+            color: #FF6B35;
+            border: 2px solid #FF6B35;
+        }
+        
+        .cookie-reject:hover {
+            background: #FF6B35;
+            color: #0a0a0a;
+            transform: translateY(-2px);
+        }
+        
+        [data-theme="light"] .cookie-reject {
+            background: rgba(216, 67, 21, 0.15);
+            color: #d84315;
+            border-color: #d84315;
+        }
+        
+        [data-theme="light"] .cookie-reject:hover {
+            background: #d84315;
+            color: #ffffff;
+        }
+        
+        @media (max-width: 768px) {
+            .cookie-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cookie-icon {
+                font-size: 36px;
+            }
+            
+            .cookie-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .cookie-btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    
+        /* ===================================
+           MODAL STYLES
+           =================================== */
         /* Modal Styles - Adaptável ao tema */
         .modal-politica {
             display: none;
@@ -610,6 +809,151 @@
                 document.body.style.overflow = 'auto';
             }
         });
+    </script>
+
+    <script>
+        // ===================================
+        // COOKIE CONSENT SYSTEM
+        // ===================================
+        function checkCookieConsent() {
+            const consent = localStorage.getItem('cookieConsent');
+            const banner = document.getElementById('cookieBanner');
+            
+            if (!consent) {
+                // Mostrar banner após 1 segundo
+                setTimeout(() => {
+                    banner.classList.add('show');
+                }, 1000);
+            } else if (consent === 'accepted') {
+                // Ativar rastreamento
+                enableTracking();
+            }
+        }
+        
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            localStorage.setItem('cookieConsentDate', new Date().toISOString());
+            closeCookieBanner();
+            enableTracking();
+            console.log('✅ Cookies aceitos - Rastreamento ativado');
+        }
+        
+        function rejectCookies() {
+            localStorage.setItem('cookieConsent', 'rejected');
+            localStorage.setItem('cookieConsentDate', new Date().toISOString());
+            closeCookieBanner();
+            console.log('❌ Cookies rejeitados - Apenas cookies essenciais');
+        }
+        
+        function closeCookieBanner() {
+            const banner = document.getElementById('cookieBanner');
+            banner.classList.remove('show');
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 400);
+        }
+        
+        function enableTracking() {
+            // Rastrear visualização da página atual
+            trackPageView();
+            
+            // Iniciar rastreamento de tempo e scroll
+            initTimeTracking();
+        }
+        
+        let pageStartTime = Date.now();
+        let maxScrollDepth = 0;
+        let trackingData = {
+            tipo_conteudo: 'home',
+            conteudo_id: null,
+            conteudo_titulo: document.title
+        };
+        
+        function initTimeTracking() {
+            // Detectar tipo de página
+            const path = window.location.pathname;
+            
+            if (path.includes('/postagens/') && path.match(/\/postagens\/(\d+)\//)) {
+                trackingData.tipo_conteudo = 'postagem';
+                trackingData.conteudo_id = parseInt(path.match(/\/postagens\/(\d+)\//)[1]);
+            } else if (path.includes('/videos/')) {
+                trackingData.tipo_conteudo = 'video';
+            }
+            
+            // Rastrear scroll
+            window.addEventListener('scroll', function() {
+                const scrollPercent = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+                if (scrollPercent > maxScrollDepth) {
+                    maxScrollDepth = Math.min(scrollPercent, 100);
+                }
+            });
+            
+            // Enviar dados antes de sair da página
+            window.addEventListener('beforeunload', function() {
+                sendTrackingData();
+            });
+            
+            // Enviar dados a cada 30 segundos
+            setInterval(function() {
+                sendTrackingData();
+            }, 30000);
+        }
+        
+        function sendTrackingData() {
+            const tempoVisualizacao = Math.round((Date.now() - pageStartTime) / 1000);
+            
+            const data = {
+                ...trackingData,
+                tempo_visualizacao: tempoVisualizacao,
+                scroll_profundidade: maxScrollDepth
+            };
+            
+            fetch('/api/track-view/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(data),
+                keepalive: true
+            }).then(response => {
+                if (response.ok) {
+                    console.log('📊 Dados de rastreamento enviados:', data);
+                }
+            }).catch(error => {
+                console.error('Erro ao enviar dados:', error);
+            });
+        }
+        
+        function trackPageView() {
+            // Configurar dados iniciais
+            const pageData = {
+                tipo_conteudo: '{{ request.resolver_match.url_name }}',
+                url: window.location.pathname,
+                referrer: document.referrer,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('📊 Rastreando visualização:', pageData);
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Verificar consentimento ao carregar a página
+        document.addEventListener('DOMContentLoaded', checkCookieConsent);
     </script>
 
     <script>
