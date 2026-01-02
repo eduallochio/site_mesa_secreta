@@ -162,7 +162,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Supabase Configuration
 SUPABASE_URL = config('SUPABASE_URL', default='')
-SUPABASE_KEY = config('SUPABASE_KEY', default='')
+# Aceita tanto SUPABASE_KEY quanto SUPABASE_SERVICE_ROLE (para compatibilidade)
+SUPABASE_KEY = config('SUPABASE_KEY', default=config('SUPABASE_SERVICE_ROLE', default=''))
 SUPABASE_BUCKET_NAME = config('SUPABASE_BUCKET_NAME', default='media')
 
 # Usar Supabase Storage se as credenciais estiverem configuradas
