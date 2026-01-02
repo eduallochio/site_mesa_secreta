@@ -2,6 +2,8 @@
 docs/
 banco/
 scripts_locais/
+*.md
+!README.md
 
 # Environment variables
 .env
