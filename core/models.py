@@ -39,7 +39,9 @@ class ConfiguracaoSite(models.Model):
     
     # Políticas e Termos
     politica_privacidade = models.TextField('Política de Privacidade', blank=True, help_text='Conteúdo da política de privacidade (aceita HTML)')
+    politica_privacidade_atualizada = models.DateField('Data de Atualização da Privacidade', null=True, blank=True, help_text='Última atualização da política')
     termos_uso = models.TextField('Termos de Uso', blank=True, help_text='Conteúdo dos termos de uso (aceita HTML)')
+    termos_uso_atualizado = models.DateField('Data de Atualização dos Termos', null=True, blank=True, help_text='Última atualização dos termos')
     
     # SEO
     meta_description = models.CharField('Meta Description', max_length=160, blank=True)

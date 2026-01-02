@@ -598,8 +598,8 @@ class ConfiguracaoSiteAdmin(admin.ModelAdmin):
             'fields': ('sobre_texto', 'email_contato'),
             'description': 'Informações exibidas no footer do site'
         }),
-        ('� Políticas e Termos', {
-            'fields': ('politica_privacidade', 'termos_uso'),
+        ('📜 Políticas e Termos', {
+            'fields': ('politica_privacidade', 'politica_privacidade_atualizada', 'termos_uso', 'termos_uso_atualizado'),
             'description': 'Conteúdo das políticas exibidas nos popups. Aceita HTML básico.',
             'classes': ('collapse',)
         }),

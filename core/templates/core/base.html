@@ -143,7 +143,7 @@
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
                     <p class="copyright">
-                        &copy; 2025 <strong>Mesa Secreta</strong>. Todos os direitos reservados. 
+                        &copy; <span id="currentYear"></span> <strong>Mesa Secreta</strong>. Todos os direitos reservados. 
                         <span class="made-with">Feito com <i class="fa-solid fa-heart"></i> para a comunidade gamer</span>
                     </p>
                     <div class="footer-bottom-links">
@@ -171,6 +171,12 @@
             <div class="modal-body-politica">
                 {% if site_config.politica_privacidade %}
                     {{ site_config.politica_privacidade|safe }}
+                    {% if site_config.politica_privacidade_atualizada %}
+                        <div class="modal-data-atualizacao">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Última atualização: {{ site_config.politica_privacidade_atualizada|date:"d/m/Y" }}
+                        </div>
+                    {% endif %}
                 {% else %}
                     <p><em>A política de privacidade ainda não foi configurada. Configure em Configurações do Site no painel admin.</em></p>
                 {% endif %}
@@ -188,6 +194,12 @@
             <div class="modal-body-politica">
                 {% if site_config.termos_uso %}
                     {{ site_config.termos_uso|safe }}
+                    {% if site_config.termos_uso_atualizado %}
+                        <div class="modal-data-atualizacao">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            Última atualização: {{ site_config.termos_uso_atualizado|date:"d/m/Y" }}
+                        </div>
+                    {% endif %}
                 {% else %}
                     <p><em>Os termos de uso ainda não foram configurados. Configure em Configurações do Site no painel admin.</em></p>
                 {% endif %}
@@ -196,7 +208,7 @@
     </div>
 
     <style>
-        /* Modal Styles */
+        /* Modal Styles - Adaptável ao tema */
         .modal-politica {
             display: none;
             position: fixed;
@@ -226,6 +238,29 @@
             box-shadow: 0 8px 32px rgba(0, 229, 204, 0.3);
             animation: slideDown 0.3s ease;
             overflow: hidden;
+        }
+        
+        /* Modo claro com data-theme */
+        .modal-politica[data-theme="light"] {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+        }
+        
+        .modal-politica[data-theme="light"] .modal-content-politica {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+            border: 2px solid #00a896 !important;
+            box-shadow: 0 8px 32px rgba(0, 168, 150, 0.3) !important;
+        }
+        
+        /* Manter @media como fallback */
+        @media (prefers-color-scheme: light) {
+            .modal-politica {
+                background-color: rgba(0, 0, 0, 0.7);
+            }
+            
+            .modal-content-politica {
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                border: 2px solid #00a896;
+            }
         }
 
         @keyframes slideDown {
@@ -258,6 +293,16 @@
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(10px);
         }
+        
+        .modal-politica[data-theme="light"] .modal-header-politica::before {
+            background: rgba(255, 255, 255, 0.85) !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-header-politica::before {
+                background: rgba(255, 255, 255, 0.85);
+            }
+        }
 
         .modal-header-politica h2 {
             margin: 0;
@@ -267,6 +312,18 @@
             position: relative;
             z-index: 1;
             text-shadow: 0 2px 8px rgba(0, 229, 204, 0.4);
+        }
+        
+        .modal-politica[data-theme="light"] .modal-header-politica h2 {
+            color: #00a896 !important;
+            text-shadow: 0 2px 8px rgba(0, 168, 150, 0.3) !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-header-politica h2 {
+                color: #00a896;
+                text-shadow: 0 2px 8px rgba(0, 168, 150, 0.3);
+            }
         }
 
         .modal-header-politica i {
@@ -292,12 +349,40 @@
             padding: 0;
             line-height: 1;
         }
+        
+        .modal-politica[data-theme="light"] .modal-close-politica {
+            background: rgba(216, 67, 21, 0.15) !important;
+            border: 2px solid #d84315 !important;
+            color: #d84315 !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-close-politica {
+                background: rgba(216, 67, 21, 0.15);
+                border: 2px solid #d84315;
+                color: #d84315;
+            }
+        }
 
         .modal-close-politica:hover {
             background: #FF6B35;
             color: #0a0a0a;
             transform: rotate(90deg);
             box-shadow: 0 4px 12px rgba(255, 107, 53, 0.5);
+        }
+        
+        .modal-politica[data-theme="light"] .modal-close-politica:hover {
+            background: #d84315 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(216, 67, 21, 0.4) !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-close-politica:hover {
+                background: #d84315;
+                color: #ffffff;
+                box-shadow: 0 4px 12px rgba(216, 67, 21, 0.4);
+            }
         }
 
         .modal-body-politica {
@@ -306,6 +391,80 @@
             overflow-y: auto;
             max-height: calc(85vh - 100px);
             line-height: 1.8;
+        }
+        
+        /* Modo claro para body com data-theme */
+        .modal-politica[data-theme="light"] .modal-body-politica {
+            color: rgba(0, 0, 0, 0.9) !important;
+        }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica h3 {
+            color: #00a896 !important;
+        }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica h4 {
+            color: #d84315 !important;
+        }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica a {
+            color: #00a896 !important;
+        }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica strong {
+            color: rgba(0, 0, 0, 0.95) !important;
+        }
+        
+        /* Modo claro para body com @media fallback */
+        @media (prefers-color-scheme: light) {
+            .modal-body-politica {
+                color: rgba(0, 0, 0, 0.9);
+            }
+            
+            .modal-body-politica h3 {
+                color: #00a896 !important;
+            }
+            
+            .modal-body-politica h4 {
+                color: #d84315 !important;
+            }
+            
+            .modal-body-politica a {
+                color: #00a896 !important;
+            }
+            
+            .modal-body-politica strong {
+                color: rgba(0, 0, 0, 0.95);
+            }
+        }
+        
+        /* Data de atualização */
+        .modal-data-atualizacao {
+            margin-top: 30px;
+            padding: 15px 20px;
+            background: rgba(0, 229, 204, 0.1);
+            border-left: 4px solid #00E5CC;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #00E5CC;
+            font-weight: 600;
+        }
+        
+        .modal-data-atualizacao i {
+            margin-right: 8px;
+        }
+        
+        .modal-politica[data-theme="light"] .modal-data-atualizacao {
+            background: rgba(0, 168, 150, 0.1) !important;
+            border-left-color: #00a896 !important;
+            color: #00a896 !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-data-atualizacao {
+                background: rgba(0, 168, 150, 0.1);
+                border-left-color: #00a896;
+                color: #00a896;
+            }
         }
 
         .modal-body-politica::-webkit-scrollbar {
@@ -316,14 +475,44 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 5px;
         }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-body-politica::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+            }
+        }
 
         .modal-body-politica::-webkit-scrollbar-thumb {
             background: rgba(0, 229, 204, 0.3);
             border-radius: 5px;
         }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica::-webkit-scrollbar-thumb {
+            background: rgba(0, 168, 150, 0.4) !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-body-politica::-webkit-scrollbar-thumb {
+                background: rgba(0, 168, 150, 0.4);
+            }
+        }
 
         .modal-body-politica::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 229, 204, 0.5);
+        }
+        
+        .modal-politica[data-theme="light"] .modal-body-politica::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 168, 150, 0.6) !important;
+        }
+        
+        @media (prefers-color-scheme: light) {
+            .modal-body-politica::-webkit-scrollbar-thumb:hover {
+                background: rgba(0, 168, 150, 0.6);
+            }
         }
 
         .modal-body-politica h3 {
@@ -386,8 +575,17 @@
     <script>
         // Funções para controlar os modals
         function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
+            
+            // Aplicar o tema ATUAL DA PÁGINA ao modal (não do sistema operacional)
+            const htmlElement = document.documentElement;
+            const pageTheme = htmlElement.getAttribute('data-theme') || 'dark';
+            modal.setAttribute('data-theme', pageTheme);
+            
+            console.log('Modal aberto com tema da página:', pageTheme);
+            console.log('Atributo data-theme do html:', htmlElement.getAttribute('data-theme'));
         }
 
         function closeModal(modalId) {
@@ -509,6 +707,13 @@
             const heroStats = document.querySelector('.hero-stats');
             if (heroStats) {
                 statsObserver.observe(heroStats);
+            }
+            
+            // Atualizar ano automaticamente no footer
+            const currentYear = new Date().getFullYear();
+            const yearElement = document.getElementById('currentYear');
+            if (yearElement) {
+                yearElement.textContent = currentYear;
             }
         });
     </script>
