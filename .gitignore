@@ -1,6 +1,7 @@
 # Documentation
 docs/
 banco/
+scripts_locais/
 
 # Environment variables
 .env
